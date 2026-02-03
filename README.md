@@ -18,6 +18,11 @@ graph TD
         Route53[Amazon Route 53]
     end
 
+    subgraph "Global Content Delivery"
+        CF[Amazon CloudFront]
+        S3Bucket[(Amazon S3 - Frontend)]
+    end
+
     subgraph "AWS Cloud - VPC"
         subgraph "Public Subnets"
             ALB[Application Load Balancer]
@@ -40,6 +45,8 @@ graph TD
     end
 
     User --> Route53
+    Route53 --> CF
+    CF --> S3Bucket
     Route53 --> ALB
     ALB --> BE1
     ALB --> BE2
@@ -53,8 +60,9 @@ graph TD
 
 ### 1. Presentation Tier (Frontend)
 - **Technology**: React.js (Vite)
-- **Deployment**: Hosted as a static site (can be served via S3/CloudFront or integrated with the App Tier).
-- **Features**: Responsive UI for user management, real-time updates via REST API.
+- **Hosting**: Static assets are stored in **Amazon S3**.
+- **Delivery**: Worldwide distribution via **Amazon CloudFront** (CDN) for low latency and SSL termination.
+- **Features**: Responsive UI for user management, communicating with the backend API via HTTPS.
 
 ### 2. Application Tier (Backend)
 - **Technology**: Node.js & Express.js
