@@ -1,0 +1,45 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache directory
+.npm/
+
+# Build artifacts (if any)
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Local database or dump files
+*.sql
+*.sqlite
+*.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# AWS or SSH keys
+*.pem
+*.key
+
+# Node package lock backup
+package-lock.json.*
