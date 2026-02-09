@@ -6,7 +6,7 @@ const db = require('./db');
 const app = express();
 
 // CORS: allow the frontend origin (configured via env or default)
-const FRONTEND_ORIGINS = [process.env.FRONTEND_ORIGIN || 'https://three-tier-demo-backend.rishimajmudar.me', 'https://d1j86t7izf9l0w.cloudfront.net'];
+const FRONTEND_ORIGINS = [process.env.FRONTEND_ORIGIN || 'https://dm5y63aqwp0gt.cloudfront.net', 'https://d1j86t7izf9l0w.cloudfront.net'];
 
 app.use(cors({
     origin: (origin, callback) => {
@@ -29,10 +29,10 @@ async function initDatabase() {
     try {
         // Create database if it doesn't exist
         await db.query('CREATE DATABASE IF NOT EXISTS demo_db');
-        
+
         // Select the database
         await db.query('USE demo_db');
-        
+
         // Create users table if it doesn't exist
         await db.query(`
             CREATE TABLE IF NOT EXISTS users (
@@ -41,7 +41,7 @@ async function initDatabase() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        
+
         console.log('Database and table initialized successfully');
     } catch (err) {
         console.error('Database initialization error:', err);
@@ -50,12 +50,12 @@ async function initDatabase() {
 }
 
 // Health check for ALB
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.status(200).send('App running');
 });
 
 // Get all users
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM users');
         res.json(rows);
@@ -66,7 +66,7 @@ app.get('/users', async (req, res) => {
 });
 
 // Add a user
-app.post('/add', async (req, res) => {
+app.post('/api/add', async (req, res) => {
     const { name } = req.body;
     if (!name) {
         return res.status(400).json({ error: 'Name is required' });
@@ -82,7 +82,7 @@ app.post('/add', async (req, res) => {
 });
 
 // Update a user
-app.put('/update/:id', async (req, res) => {
+app.put('/api/update/:id', async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
     if (!name) {
@@ -102,7 +102,7 @@ app.put('/update/:id', async (req, res) => {
 });
 
 // Delete a user
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/api/delete/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const [result] = await db.query('DELETE FROM users WHERE id = ?', [id]);

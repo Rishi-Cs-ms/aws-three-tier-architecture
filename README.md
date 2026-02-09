@@ -4,6 +4,7 @@
 [![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)](https://www.terraform.io/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![CI/CD Pipeline](https://github.com/Rishi-Cs-ms/aws-three-tier-architecture/actions/workflows/deploy.yml/badge.svg)](https://github.com/Rishi-Cs-ms/aws-three-tier-architecture/actions/workflows/deploy.yml)
 
 This project demonstrates a highly available, scalable, and secure **Three-Tier Web Architecture** deployed on AWS using **Terraform** for Infrastructure as Code (IaC). It features a modern React frontend, a robust Node.js/Express backend, and a managed MySQL database via Amazon RDS.
 
@@ -95,6 +96,29 @@ The entire infrastructure is automated using Terraform, organized into modular c
     - NAT Gateway for secure outbound internet access for private instances.
     - Least-privilege Security Group rules.
 - **Automated Deployment**: One-command infrastructure provisioning with Terraform.
+
+## 🔄 CI/CD Pipeline
+
+The project includes a fully automated CI/CD pipeline powered by **GitHub Actions**, ensuring that every change is validated and deployed seamlessly.
+
+### Pipeline Workflow:
+1. **Infrastructure Validation**: Automatic Terraform format checking and validation.
+2. **Backend CI**: 
+   - Node.js environment setup.
+   - Dependency installation and integrity check.
+   - (Extensible) Can be configured to run unit and integration tests.
+3. **Frontend Continuous Deployment**:
+   - Compiles the React (Vite) application.
+   - Synchronizes the production build to the **Amazon S3** bucket.
+   - Invalidates the **Amazon CloudFront** cache to ensure users see the latest version immediately.
+
+### Required GitHub Secrets:
+To enable the pipeline, the following secrets should be configured in the GitHub repository:
+- `AWS_ACCESS_KEY_ID`: Your AWS access key.
+- `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key.
+- `AWS_REGION`: The region where your infrastructure is deployed (e.g., `us-east-1`).
+- `S3_BUCKET_NAME`: The name of the S3 bucket hosting the frontend.
+- `CLOUDFRONT_DISTRIBUTION_ID`: The ID of the CloudFront distribution.
 
 ## 💻 Tech Stack
 

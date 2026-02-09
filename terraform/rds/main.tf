@@ -7,7 +7,7 @@ resource "random_password" "db_password" {
 
 # Store credentials in Secrets Manager
 resource "aws_secretsmanager_secret" "db_secret" {
-  name = "mysql-db-credentials-v1"
+  name = "mysql-db-credentials-three-tier-v2"
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret_value" {
@@ -21,7 +21,7 @@ resource "aws_secretsmanager_secret_version" "db_secret_value" {
 
 # DB Subnet Group (PRIVATE subnets)
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "mysql-private-subnet-group"
+  name       = "mysql-private-subnet-group-three-tier"
   subnet_ids = var.private_subnet_ids
 
   tags = {

@@ -1,6 +1,6 @@
 #IAM Role for EC2
 resource "aws_iam_role" "ec2_role" {
-  name = "ec2-app-role"
+  name = "ec2-app-role-three-tier"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "secrets" {
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2-app-profile"
+  name = "ec2-app-profile-three-tier"
   role = aws_iam_role.ec2_role.name
 }
 
@@ -40,24 +40,36 @@ resource "aws_launch_template" "app_lt" {
 
   vpc_security_group_ids = [var.app_sg_id]
 
-  user_data = base64encode(<<EOF
-#!/bin/bash
-cd /home/ec2-user/aws-three-tier-demo-backend
+  user_data = base64encode(<<-EOF
+    #!/bin/bash
+    yum update -y
+    yum install -y nodejs git jq mariadb105
+    npm install -g pm2
 
-SECRET=$(aws secretsmanager get-secret-value \
-  --secret-id ${var.db_secret_arn} \
-  --query SecretString \
-  --output text)
+    cd /home/ec2-user
+    git clone https://github.com/Rishi-Cs-ms/aws-three-tier-demo-backend.git
+    cd aws-three-tier-demo-backend
+    npm install
 
-export DB_HOST=$(echo $SECRET | jq -r .host)
-export DB_USER=$(echo $SECRET | jq -r .username)
-export DB_PASSWORD=$(echo $SECRET | jq -r .password)
-export DB_NAME=demo_db
-export PORT=3000
+    SECRET=$(aws secretsmanager get-secret-value \
+      --secret-id ${var.db_secret_arn} \
+      --region ${var.region} \
+      --query SecretString \
+      --output text)
 
-pm2 start server.js --name backend
-pm2 save
-EOF
+    export DB_HOST=$(echo "${var.db_endpoint}" | cut -d: -f1)
+    export DB_USER=$(echo $SECRET | jq -r .username)
+    export DB_PASSWORD=$(echo $SECRET | jq -r .password)
+    export DB_NAME=demo_db
+    export PORT=3000
+
+    # Initialize Database
+    mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS demo_db;"
+
+    pm2 start server.js --name backend
+    pm2 save
+    pm2 startup
+    EOF
   )
 }
 

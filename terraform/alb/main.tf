@@ -1,6 +1,6 @@
 #Target Group
 resource "aws_lb_target_group" "app_tg" {
-  name     = "node-app-tg"
+  name     = "node-app-tg-three-tier"
   port     = 3000
   protocol = "HTTP"
   vpc_id   = var.vpc_id

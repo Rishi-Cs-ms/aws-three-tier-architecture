@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-const API_URL = "https://three-tier-demo-backend.rishimajmudar.me";
+const API_URL = "/api";
 
 function App() {
   const [users, setUsers] = useState([]);
