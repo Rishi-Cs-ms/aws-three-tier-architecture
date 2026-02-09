@@ -1,11 +1,31 @@
-# Reference the existing IAM Role
-# Note: You MUST manually ensure this role's trust relationship allows the repo: Rishi-Cs-ms/aws-three-tier-architecture
-# It should look like: "token.actions.githubusercontent.com:sub": "repo:Rishi-Cs-ms/aws-three-tier-architecture:*"
+# Managed existing IAM Role to edit Trust Relationship
+resource "aws_iam_role" "github_actions" {
+  name = "github-actions-portfolio"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Effect = "Allow"
+        Principal = {
+          Federated = "arn:aws:iam::458130036240:oidc-provider/token.actions.githubusercontent.com"
+        }
+        Condition = {
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:*:*"
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
 
 # New IAM Policy for Three-Tier Project Frontend & Backend
 resource "aws_iam_role_policy" "three_tier_deploy" {
   name = "three-tier-deploy-policy"
-  role = "github-actions-portfolio" # The name of your existing role
+  role = aws_iam_role.github_actions.name
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -54,11 +74,6 @@ resource "aws_iam_role_policy" "three_tier_deploy" {
   })
 }
 
-# Output the ARN for clarity (referencing the existing role)
-data "aws_iam_role" "existing_github_role" {
-  name = "github-actions-portfolio"
-}
-
 output "github_actions_role_arn" {
-  value = data.aws_iam_role.existing_github_role.arn
+  value = aws_iam_role.github_actions.arn
 }
